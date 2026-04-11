@@ -9,7 +9,7 @@
 
 body{
 margin:0;
-font-family:-apple-system, BlinkMacSystemFont, sans-serif;
+font-family:-apple-system,BlinkMacSystemFont,sans-serif;
 background:#000;
 overflow:hidden;
 color:white;
@@ -19,7 +19,7 @@ align-items:center;
 height:100vh;
 }
 
-/* 🌌 PARTICULAS */
+/* PARTICULAS */
 canvas{
 position:fixed;
 top:0;
@@ -27,7 +27,7 @@ left:0;
 z-index:0;
 }
 
-/* 🧊 CARD IOS */
+/* CARD */
 .box{
 position:relative;
 z-index:1;
@@ -39,7 +39,6 @@ backdrop-filter: blur(30px);
 box-shadow:0 0 50px rgba(255,0,120,0.5);
 text-align:center;
 animation:fade .6s ease;
-transition:.3s;
 }
 
 @keyframes fade{
@@ -81,10 +80,9 @@ background:#ff0055;
 color:white;
 font-weight:bold;
 box-shadow:0 0 25px #ff0055;
-cursor:pointer;
 }
 
-/* CARD */
+/* CARD INTERNO */
 .card{
 background:rgba(255,255,255,0.05);
 padding:12px;
@@ -123,20 +121,6 @@ transform:translateX(20px);
 
 .hidden{display:none;}
 
-.timer{
-margin-top:10px;
-font-size:13px;
-opacity:.8;
-}
-
-/* SHAKE */
-@keyframes shake{
-0%{transform:translateX(0);}
-25%{transform:translateX(-5px);}
-50%{transform:translateX(5px);}
-75%{transform:translateX(-5px);}
-100%{transform:translateX(0);}
-}
 </style>
 </head>
 
@@ -147,15 +131,7 @@ opacity:.8;
 <!-- LOGIN -->
 <div class="box" id="loginBox">
 <h2>ERICK.WQ</h2>
-
-<div style="position:relative;">
-<input id="key" type="password" placeholder="Digite sua key">
-<span onclick="toggleKey()" 
-style="position:absolute;right:15px;top:50%;transform:translateY(-50%);cursor:pointer;">
-👁
-</span>
-</div>
-
+<input id="key" placeholder="Digite sua key">
 <button onclick="login()">ENTRAR</button>
 </div>
 
@@ -163,8 +139,6 @@ style="position:absolute;right:15px;top:50%;transform:translateY(-50%);cursor:po
 <div class="box hidden" id="painel">
 
 <h3>Painel Premium</h3>
-
-<div class="timer" id="tempo"></div>
 
 <div class="card">
 Aimbot
@@ -182,7 +156,6 @@ FOV <span id="fovv">50</span>
 </div>
 
 <button onclick="ativar()">ATIVAR</button>
-<button onclick="logout()">SAIR</button>
 
 <p id="status"></p>
 
@@ -190,106 +163,40 @@ FOV <span id="fovv">50</span>
 
 <script>
 
-// 🔐 KEY FIXA
+// 🔑 KEY FIXA
 const KEY_CORRETA = "Rkz-key-2026-aimbot";
 
-// 💾 AUTO LOGIN
-if(localStorage.getItem("logado") === "true"){
-loginBox.classList.add("hidden");
-painel.classList.remove("hidden");
-tempo.innerText = "🟢 Acesso permanente liberado";
-}
-
-// 🔔 TOAST
-function toast(msg, erro=false){
-let t = document.createElement("div");
-
-t.innerText = msg;
-t.style.position="fixed";
-t.style.bottom="30px";
-t.style.left="50%";
-t.style.transform="translateX(-50%)";
-t.style.padding="12px 20px";
-t.style.borderRadius="20px";
-t.style.background = erro ? "#ff0033" : "#00ff88";
-t.style.color="#000";
-t.style.fontWeight="bold";
-t.style.boxShadow="0 0 20px "+(erro?"#ff0033":"#00ff88");
-t.style.zIndex="999";
-
-document.body.appendChild(t);
-
-setTimeout(()=>t.remove(),2000);
-}
-
-// 👁 MOSTRAR KEY
-let visivel = false;
-
-function toggleKey(){
-visivel = !visivel;
-key.type = visivel ? "text" : "password";
-}
-
-// 🔐 LOGIN
+// LOGIN
 function login(){
 
-let k = key.value;
+let k = document.getElementById("key").value.trim();
 
 if(k !== KEY_CORRETA){
-key.style.animation="shake .3s";
-setTimeout(()=>key.style.animation="",300);
-toast("Key inválida", true);
+alert("Key inválida");
 return;
 }
 
-localStorage.setItem("logado", "true");
-
-loginBox.style.transform="scale(.9)";
-loginBox.style.opacity="0";
-
-setTimeout(()=>{
-loginBox.classList.add("hidden");
-painel.classList.remove("hidden");
-
-painel.style.opacity="0";
-painel.style.transform="scale(.9)";
-
-setTimeout(()=>{
-painel.style.opacity="1";
-painel.style.transform="scale(1)";
-},50);
-
-},300);
-
-tempo.innerText = "🟢 Acesso permanente liberado";
-toast("Acesso liberado 🚀");
+// LIBERA
+document.getElementById("loginBox").classList.add("hidden");
+document.getElementById("painel").classList.remove("hidden");
 
 }
 
-// 🔓 LOGOUT
-function logout(){
-localStorage.removeItem("logado");
-location.reload();
+// FOV
+document.getElementById("fov").oninput = function(){
+document.getElementById("fovv").innerText = this.value;
 }
 
-// 🎯 FOV
-fov.oninput = () => fovv.innerText = fov.value;
-
-// 🚀 ATIVAR
+// ATIVAR
 function ativar(){
+let s = document.getElementById("status");
 
-status.innerHTML="🟢 Iniciando...";
-
-setTimeout(()=>status.innerHTML+="<br>Carregando módulos...",800);
-setTimeout(()=>status.innerHTML+="<br>Aplicando...",1600);
-setTimeout(()=>{
-status.innerHTML+="<br>Finalizado ✅";
-toast("Sistema ativado 💎");
-},2200);
-
+s.innerHTML="🟢 Iniciando...";
+setTimeout(()=>s.innerHTML+="<br>Carregando módulos...",1000);
+setTimeout(()=>s.innerHTML+="<br>Finalizado ✅",2000);
 }
 
-// 🌌 PARTICULAS
+/* PARTICULAS */
 const c = document.getElementById("bg");
 const ctx = c.getContext("2d");
 
