@@ -27,34 +27,17 @@ left:0;
 z-index:0;
 }
 
-/* CARD */
-.box{
+/* LOGIN */
+.login{
 position:relative;
 z-index:1;
-width:330px;
+width:300px;
 padding:25px;
-border-radius:28px;
+border-radius:25px;
 background:rgba(255,255,255,0.05);
-backdrop-filter: blur(30px);
-box-shadow:0 0 50px rgba(255,0,120,0.5);
+backdrop-filter:blur(25px);
+box-shadow:0 0 40px rgba(255,0,120,0.5);
 text-align:center;
-animation:fade .6s ease;
-}
-
-@keyframes fade{
-from{opacity:0;transform:scale(.9);}
-to{opacity:1;}
-}
-
-.box::before{
-content:"";
-position:absolute;
-inset:-2px;
-border-radius:28px;
-background:#ff0055;
-filter:blur(30px);
-opacity:.3;
-z-index:-1;
 }
 
 /* INPUT */
@@ -66,28 +49,67 @@ border-radius:14px;
 margin-top:10px;
 background:rgba(255,255,255,0.08);
 color:white;
-outline:none;
 }
 
 /* BOTÃO */
 button{
 width:100%;
 padding:14px;
-margin-top:15px;
+margin-top:10px;
 border:none;
-border-radius:16px;
+border-radius:14px;
 background:#ff0055;
 color:white;
 font-weight:bold;
-box-shadow:0 0 25px #ff0055;
+box-shadow:0 0 20px #ff0055;
 }
 
-/* CARD INTERNO */
+/* PAINEL */
+.container{
+display:none;
+width:360px;
+height:520px;
+background:rgba(20,20,20,0.9);
+border-radius:25px;
+box-shadow:0 0 40px #ff0055;
+overflow:hidden;
+position:relative;
+z-index:1;
+}
+
+/* MENU */
+.menu{
+display:flex;
+height:100%;
+}
+
+.sidebar{
+width:70px;
+background:#000;
+display:flex;
+flex-direction:column;
+}
+
+.sidebar button{
+height:70px;
+background:none;
+border:none;
+color:white;
+font-size:20px;
+}
+
+/* CONTENT */
+.content{
+flex:1;
+padding:15px;
+overflow-y:auto;
+}
+
 .card{
 background:rgba(255,255,255,0.05);
 padding:12px;
-border-radius:14px;
 margin-top:10px;
+border-radius:14px;
 }
 
 /* SWITCH */
@@ -119,7 +141,7 @@ input:checked + .slider:before{
 transform:translateX(20px);
 }
 
-.hidden{display:none;}
+.page{display:none;}
 
 </style>
 </head>
@@ -129,16 +151,29 @@ transform:translateX(20px);
 <canvas id="bg"></canvas>
 
 <!-- LOGIN -->
-<div class="box" id="loginBox">
+<div class="login" id="loginBox">
 <h2>ERICK.WQ</h2>
 <input id="key" placeholder="Digite sua key">
 <button onclick="login()">ENTRAR</button>
 </div>
 
 <!-- PAINEL -->
-<div class="box hidden" id="painel">
+<div class="container" id="painel">
 
-<h3>Painel Premium</h3>
+<div class="menu">
+
+<div class="sidebar">
+<button onclick="show('aim')">🎯</button>
+<button onclick="show('arma')">🔫</button>
+<button onclick="show('div')">📦</button>
+<button onclick="show('inj')">💉</button>
+</div>
+
+<div class="content">
+
+<!-- AIM -->
+<div id="aim" class="page">
+<h3>AIMBOT</h3>
 
 <div class="card">
 Aimbot
@@ -146,7 +181,7 @@ Aimbot
 </div>
 
 <div class="card">
-Sem Recuo
+Precisão
 <label class="switch"><input type="checkbox"><span class="slider"></span></label>
 </div>
 
@@ -155,20 +190,67 @@ FOV <span id="fovv">50</span>
 <input type="range" min="0" max="100" value="50" id="fov">
 </div>
 
-<button onclick="ativar()">ATIVAR</button>
+</div>
+
+<!-- ARMA -->
+<div id="arma" class="page">
+<h3>ARMA</h3>
+
+<div class="card">
+Sem Recuo
+<label class="switch"><input type="checkbox"><span class="slider"></span></label>
+</div>
+
+<div class="card">
+Alta Precisão
+<label class="switch"><input type="checkbox"><span class="slider"></span></label>
+</div>
+
+</div>
+
+<!-- DIVERSOS -->
+<div id="div" class="page">
+<h3>DIVERSOS</h3>
+
+<div class="card">
+120 FPS
+<label class="switch"><input type="checkbox"><span class="slider"></span></label>
+</div>
+
+<div class="card">
+Otimização
+<label class="switch"><input type="checkbox"><span class="slider"></span></label>
+</div>
+
+<div class="card">
+Sem Lag
+<label class="switch"><input type="checkbox"><span class="slider"></span></label>
+</div>
+
+</div>
+
+<!-- INJEÇÃO -->
+<div id="inj" class="page">
+<h3>INJEÇÃO</h3>
+
+<button onclick="inje()">INJETAR FF NORMAL</button>
+<button onclick="inje()">INJETAR FF MAX</button>
 
 <p id="status"></p>
 
 </div>
 
+</div>
+</div>
+
+</div>
+
 <script>
 
-// 🔑 KEY FIXA
+// 🔑 LOGIN (NÃO ALTERADO)
 const KEY_CORRETA = "Rkz-key-2026-aimbot";
 
-// LOGIN
 function login(){
-
 let k = document.getElementById("key").value.trim();
 
 if(k !== KEY_CORRETA){
@@ -176,20 +258,26 @@ alert("Key inválida");
 return;
 }
 
-// LIBERA
-document.getElementById("loginBox").classList.add("hidden");
-document.getElementById("painel").classList.remove("hidden");
+document.getElementById("loginBox").style.display="none";
+document.getElementById("painel").style.display="block";
 
+show("aim");
+}
+
+// MENU
+function show(id){
+document.querySelectorAll(".page").forEach(p=>p.style.display="none");
+document.getElementById(id).style.display="block";
 }
 
 // FOV
-document.getElementById("fov").oninput = function(){
-document.getElementById("fovv").innerText = this.value;
+document.getElementById("fov").oninput=function(){
+document.getElementById("fovv").innerText=this.value;
 }
 
-// ATIVAR
-function ativar(){
-let s = document.getElementById("status");
+// ANIMAÇÃO
+function inje(){
+let s=document.getElementById("status");
 
 s.innerHTML="🟢 Iniciando...";
 setTimeout(()=>s.innerHTML+="<br>Carregando módulos...",1000);
