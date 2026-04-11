@@ -39,6 +39,7 @@ backdrop-filter: blur(30px);
 box-shadow:0 0 50px rgba(255,0,120,0.5);
 text-align:center;
 animation:fade .6s ease;
+transition:.3s;
 }
 
 @keyframes fade{
@@ -80,6 +81,7 @@ background:#ff0055;
 color:white;
 font-weight:bold;
 box-shadow:0 0 25px #ff0055;
+cursor:pointer;
 }
 
 /* CARD */
@@ -126,6 +128,15 @@ margin-top:10px;
 font-size:13px;
 opacity:.8;
 }
+
+/* SHAKE */
+@keyframes shake{
+0%{transform:translateX(0);}
+25%{transform:translateX(-5px);}
+50%{transform:translateX(5px);}
+75%{transform:translateX(-5px);}
+100%{transform:translateX(0);}
+}
 </style>
 </head>
 
@@ -136,14 +147,22 @@ opacity:.8;
 <!-- LOGIN -->
 <div class="box" id="loginBox">
 <h2>ERICK.WQ</h2>
-<input id="key" placeholder="Digite sua key">
+
+<div style="position:relative;">
+<input id="key" type="password" placeholder="Digite sua key">
+<span onclick="toggleKey()" 
+style="position:absolute;right:15px;top:50%;transform:translateY(-50%);cursor:pointer;">
+👁
+</span>
+</div>
+
 <button onclick="login()">ENTRAR</button>
 </div>
 
 <!-- PAINEL -->
 <div class="box hidden" id="painel">
 
-<h3>Painel</h3>
+<h3>Painel Premium</h3>
 
 <div class="timer" id="tempo"></div>
 
@@ -163,75 +182,114 @@ FOV <span id="fovv">50</span>
 </div>
 
 <button onclick="ativar()">ATIVAR</button>
+<button onclick="logout()">SAIR</button>
 
 <p id="status"></p>
 
 </div>
 
 <script>
-  
-// 🔐 DEVICE ID
-let deviceID = localStorage.getItem("deviceID");
-if(!deviceID){
-deviceID = Math.random().toString(36).substring(2);
-localStorage.setItem("deviceID", deviceID);
+
+// 🔐 KEY FIXA
+const KEY_CORRETA = "Rkz-key-2026-aimbot";
+
+// 💾 AUTO LOGIN
+if(localStorage.getItem("logado") === "true"){
+loginBox.classList.add("hidden");
+painel.classList.remove("hidden");
+tempo.innerText = "🟢 Acesso permanente liberado";
 }
 
-// 🔑 COLE AQUI O JSON DO SCRIPTABLE
-let keys = [yas12]; // <-- COLE AQUI
+// 🔔 TOAST
+function toast(msg, erro=false){
+let t = document.createElement("div");
 
-// LOGIN
+t.innerText = msg;
+t.style.position="fixed";
+t.style.bottom="30px";
+t.style.left="50%";
+t.style.transform="translateX(-50%)";
+t.style.padding="12px 20px";
+t.style.borderRadius="20px";
+t.style.background = erro ? "#ff0033" : "#00ff88";
+t.style.color="#000";
+t.style.fontWeight="bold";
+t.style.boxShadow="0 0 20px "+(erro?"#ff0033":"#00ff88");
+t.style.zIndex="999";
+
+document.body.appendChild(t);
+
+setTimeout(()=>t.remove(),2000);
+}
+
+// 👁 MOSTRAR KEY
+let visivel = false;
+
+function toggleKey(){
+visivel = !visivel;
+key.type = visivel ? "text" : "password";
+}
+
+// 🔐 LOGIN
 function login(){
 
 let k = key.value;
-let obj = keys.find(x=>x.key===k);
 
-if(!obj) return alert("Key inválida");
-
-// 🔒 BLOQUEIO POR DISPOSITIVO
-if(!obj.devices.includes(deviceID)){
-
-// se já tem outro device
-if(obj.devices.length >= 1){
-return alert("Key já usada em outro aparelho");
+if(k !== KEY_CORRETA){
+key.style.animation="shake .3s";
+setTimeout(()=>key.style.animation="",300);
+toast("Key inválida", true);
+return;
 }
 
-// registra
-obj.devices.push(deviceID);
-}
+localStorage.setItem("logado", "true");
 
-// ⏱ EXPIRAÇÃO
-if(Date.now()>obj.exp){
-return alert("Key expirada");
-}
+loginBox.style.transform="scale(.9)";
+loginBox.style.opacity="0";
 
-userKey = obj;
-
+setTimeout(()=>{
 loginBox.classList.add("hidden");
 painel.classList.remove("hidden");
 
+painel.style.opacity="0";
+painel.style.transform="scale(.9)";
+
+setTimeout(()=>{
+painel.style.opacity="1";
+painel.style.transform="scale(1)";
+},50);
+
+},300);
+
+tempo.innerText = "🟢 Acesso permanente liberado";
+toast("Acesso liberado 🚀");
+
 }
 
-// TIMER
-setInterval(()=>{
-if(userKey){
-tempo.innerText =
-"Tempo restante: " +
-formatar(userKey.exp - Date.now()) +
-" | Devices: " + userKey.devices.length;
+// 🔓 LOGOUT
+function logout(){
+localStorage.removeItem("logado");
+location.reload();
 }
-},1000);
-/* FOV */
+
+// 🎯 FOV
 fov.oninput = () => fovv.innerText = fov.value;
 
-/* ATIVAR */
+// 🚀 ATIVAR
 function ativar(){
+
 status.innerHTML="🟢 Iniciando...";
-setTimeout(()=>status.innerHTML+="<br>Carregando módulos...",1000);
-setTimeout(()=>status.innerHTML+="<br>Finalizado ✅",2000);
+
+setTimeout(()=>status.innerHTML+="<br>Carregando módulos...",800);
+setTimeout(()=>status.innerHTML+="<br>Aplicando...",1600);
+setTimeout(()=>{
+status.innerHTML+="<br>Finalizado ✅";
+toast("Sistema ativado 💎");
+},2200);
+
 }
 
-/* 🌌 PARTICULAS PREMIUM */
+// 🌌 PARTICULAS
 const c = document.getElementById("bg");
 const ctx = c.getContext("2d");
 
