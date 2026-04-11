@@ -169,63 +169,38 @@ FOV <span id="fovv">50</span>
 </div>
 
 <script>
-
-/* 🔐 DEVICE ID */
+  
+// 🔐 DEVICE ID
 let deviceID = localStorage.getItem("deviceID");
 if(!deviceID){
 deviceID = Math.random().toString(36).substring(2);
 localStorage.setItem("deviceID", deviceID);
 }
 
-/* 🔑 KEYS */
-let keys = JSON.parse(localStorage.getItem("keys") || "[]");
+// 🔑 COLE AQUI O JSON DO SCRIPTABLE
+let keys = []; // <-- COLE AQUI
 
-/* exemplo */
-if(keys.length === 0){
-keys.push({
-key:"ERICK123",
-exp:Date.now()+86400000,
-device:null
-});
-localStorage.setItem("keys", JSON.stringify(keys));
-}
-
-let userKey = null;
-
-/* ⏱ FORMATAR TEMPO */
-function formatar(ms){
-if(ms<=0) return "🔴 Expirada";
-
-let s = Math.floor(ms/1000);
-
-let d = Math.floor(s/86400);
-s%=86400;
-
-let h = Math.floor(s/3600);
-s%=3600;
-
-let m = Math.floor(s/60);
-s%=60;
-
-return d+"d "+h+"h "+m+"m "+s+"s";
-}
-
-/* LOGIN */
+// LOGIN
 function login(){
+
 let k = key.value;
 let obj = keys.find(x=>x.key===k);
 
 if(!obj) return alert("Key inválida");
 
-if(!obj.device){
-obj.device = deviceID;
-localStorage.setItem("keys", JSON.stringify(keys));
-}
+// 🔒 BLOQUEIO POR DISPOSITIVO
+if(!obj.devices.includes(deviceID)){
 
-if(obj.device !== deviceID){
+// se já tem outro device
+if(obj.devices.length >= 1){
 return alert("Key já usada em outro aparelho");
 }
 
+// registra
+obj.devices.push(deviceID);
+}
+
+// ⏱ EXPIRAÇÃO
 if(Date.now()>obj.exp){
 return alert("Key expirada");
 }
@@ -234,15 +209,18 @@ userKey = obj;
 
 loginBox.classList.add("hidden");
 painel.classList.remove("hidden");
+
 }
 
-/* TIMER */
+// TIMER
 setInterval(()=>{
 if(userKey){
-tempo.innerText = "Tempo restante: " + formatar(userKey.exp - Date.now());
+tempo.innerText =
+"Tempo restante: " +
+formatar(userKey.exp - Date.now()) +
+" | Devices: " + userKey.devices.length;
 }
 },1000);
-
 /* FOV */
 fov.oninput = () => fovv.innerText = fov.value;
 
