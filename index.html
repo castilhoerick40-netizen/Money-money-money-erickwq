@@ -9,162 +9,138 @@
 
 body{
 margin:0;
-font-family:Arial, sans-serif;
+font-family:-apple-system, BlinkMacSystemFont, sans-serif;
 background:#0b0014;
+color:white;
 display:flex;
 justify-content:center;
 align-items:center;
 height:100vh;
-color:white;
 overflow:hidden;
 }
 
-/* FUNDO */
-body::before{
-content:"";
-position:fixed;
-width:100%;
-height:100%;
-background:radial-gradient(circle at center,#2a004a,#000);
-z-index:-2;
-}
-
+/* 🌧️ CHUVA */
 canvas{
 position:fixed;
-z-index:-1;
+top:0;
+left:0;
+z-index:0;
 }
 
-/* CARD */
-.box{
-width:260px;
-background:rgba(30,0,50,0.85);
-border-radius:18px;
+/* 🔐 LOGIN */
+.login{
+position:absolute;
+z-index:2;
+width:300px;
+background:#111;
+padding:20px;
+border-radius:20px;
+box-shadow:0 0 30px #a855f7;
+text-align:center;
+}
+
+input{
+width:100%;
 padding:12px;
-box-shadow:
-0 0 30px rgba(140,0,255,0.7),
-inset 0 0 20px rgba(140,0,255,0.2);
-backdrop-filter:blur(20px);
-}
-
-/* HEADER */
-.top{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:8px;
-}
-
-.top h3{
-font-size:14px;
-margin:0;
-letter-spacing:1px;
-}
-
-/* MENU */
-.flex{
-display:flex;
-}
-
-/* SIDEBAR */
-.side{
-width:50px;
-display:flex;
-flex-direction:column;
-gap:8px;
-}
-
-.icon{
-height:45px;
-border-radius:12px;
-display:flex;
-align-items:center;
-justify-content:center;
-background:rgba(255,255,255,0.05);
-opacity:.6;
-font-size:14px;
-}
-
-.icon.active{
-background:linear-gradient(180deg,#a855f7,#6d28d9);
-opacity:1;
-}
-
-/* CONTENT */
-.content{
-flex:1;
-padding-left:8px;
-}
-
-/* GRID BOTÕES */
-.grid{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:6px;
-}
-
-/* BOTÕES */
-.opt{
-background:rgba(255,255,255,0.05);
+border:none;
 border-radius:10px;
-padding:6px;
-font-size:11px;
-display:flex;
-align-items:center;
-gap:5px;
-}
-
-/* RADIO STYLE */
-.circle{
-width:12px;
-height:12px;
-border-radius:50%;
-border:2px solid #aaa;
-}
-
-/* FOV */
-.range{
-margin-top:8px;
-}
-
-input[type=range]{
-width:100%;
-}
-
-/* SELECT */
-select{
-width:100%;
-padding:6px;
-border-radius:8px;
-background:#1a002b;
+background:#000;
 color:white;
-border:none;
-margin-top:6px;
+margin-top:10px;
 }
 
-/* BOTÃO */
-.btn{
-margin-top:10px;
+button{
 width:100%;
-padding:10px;
+padding:12px;
+margin-top:10px;
 border:none;
 border-radius:10px;
-background:linear-gradient(180deg,#a855f7,#6d28d9);
+background:linear-gradient(45deg,#9333ea,#c084fc);
 color:white;
 font-weight:bold;
 }
 
-/* FPS */
-.fps{
-text-align:center;
-font-size:18px;
-color:#c084fc;
-margin-bottom:8px;
+/* 💜 CARD PRINCIPAL */
+.container{
+display:none;
+position:relative;
+z-index:2;
+width:340px;
+background:rgba(20,10,40,0.7);
+border-radius:25px;
+backdrop-filter: blur(20px);
+box-shadow:0 0 40px rgba(168,85,247,0.6);
+padding:15px;
 }
 
-/* PAGES */
-.page{display:none;}
-.activePage{display:block;}
+.title{
+text-align:center;
+font-weight:bold;
+margin-bottom:10px;
+}
 
+/* MENU */
+.menu{
+display:flex;
+}
+
+.sidebar{
+width:60px;
+display:flex;
+flex-direction:column;
+gap:10px;
+}
+
+.sidebar button{
+height:60px;
+border-radius:15px;
+background:#1a0033;
+}
+
+.sidebar button.active{
+background:linear-gradient(45deg,#9333ea,#c084fc);
+}
+
+.content{
+flex:1;
+padding-left:10px;
+}
+
+/* CARDS */
+.option{
+display:flex;
+align-items:center;
+justify-content:space-between;
+background:#140028;
+padding:10px;
+border-radius:12px;
+margin-top:10px;
+cursor:pointer;
+}
+
+.option.active{
+background:#9333ea;
+}
+
+/* SLIDER */
+input[type=range]{
+width:100%;
+margin-top:10px;
+}
+
+/* BOTÃO INJETAR */
+.inject{
+margin-top:15px;
+background:linear-gradient(45deg,#9333ea,#c084fc);
+box-shadow:0 0 20px #9333ea;
+}
+
+/* STATUS */
+#status{
+margin-top:10px;
+font-size:13px;
+opacity:.9;
+}
 </style>
 </head>
 
@@ -172,121 +148,152 @@ margin-bottom:8px;
 
 <canvas id="bg"></canvas>
 
-<div class="box">
-
-<div class="top">
-<h3>ERICK AUXÍLIO</h3>
-<span>🌙 ↗</span>
+<!-- LOGIN -->
+<div class="login" id="loginBox">
+<h2>Erick Auxílio</h2>
+<input id="key" placeholder="Digite a key">
+<button onclick="login()">ENTRAR</button>
 </div>
 
-<div class="flex">
+<!-- PAINEL -->
+<div class="container" id="painel">
 
-<!-- SIDEBAR -->
-<div class="side">
-<div class="icon active" onclick="show('aim')">🎯</div>
-<div class="icon" onclick="show('fps')">⚡</div>
-<div class="icon" onclick="show('info')">ℹ️</div>
+<div class="title">Erick Auxílio</div>
+
+<div class="menu">
+
+<div class="sidebar">
+<button onclick="show('aim')" class="active">🎯</button>
+<button onclick="show('fps')">⚡</button>
+<button onclick="show('info')">ℹ️</button>
 </div>
 
-<!-- CONTENT -->
 <div class="content">
 
 <!-- AIM -->
-<div id="aim" class="page activePage">
+<div id="aim" class="page">
+<div class="option" onclick="toggle(this)">Ativar AimTrick</div>
+<div class="option" onclick="toggle(this)">No Recoil</div>
+<div class="option" onclick="toggle(this)">Aumentar precisão</div>
+<div class="option" onclick="toggle(this)">Ativar AimLock</div>
 
-<div class="grid">
-<div class="opt"><div class="circle"></div> Ativar AimTrick</div>
-<div class="opt"><div class="circle"></div> NoRecoil</div>
-<div class="opt"><div class="circle"></div> aumentar precisão</div>
-<div class="opt"><div class="circle"></div> Ativar AimLock</div>
-</div>
-
-<div class="range">
-Regular FOV: [<span id="fovv">50</span>]
+FOV <span id="fovv">50</span>
 <input type="range" min="0" max="100" value="50" id="fov">
-</div>
 
-<select>
-<option>Pescoço</option>
-<option>Cabeça</option>
-<option>Peito</option>
-</select>
-
-<button class="btn" onclick="injetar()">INJETAR</button>
-
+<button class="inject" onclick="inje()">INJETAR</button>
 </div>
 
 <!-- FPS -->
-<div id="fps" class="page">
+<div id="fps" class="page" style="display:none;">
+<div class="option" onclick="toggle(this)">Aumentar FPS</div>
+<div class="option" onclick="toggle(this)">Reduzir Lag</div>
+<div class="option" onclick="toggle(this)">Otimização máxima</div>
 
-<div class="fps">+61 FPS</div>
-
-<div class="opt"><div class="circle"></div> Aumentar Contraste</div>
-<div class="opt"><div class="circle"></div> Aumentar Fluidez</div>
-<div class="opt"><div class="circle"></div> Aumentar Deslize</div>
-
+<button class="inject" onclick="inje()">INJETAR</button>
 </div>
 
 <!-- INFO -->
-<div id="info" class="page">
-
-<div style="font-size:12px;line-height:1.5">
-Criado por: <b>Erick</b><br><br>
-Créditos: Erick Dev<br><br>
-Modelo do telefone:<br>
-Navegador Web<br><br>
-<i>Dica: Ative no treinamento</i>
-</div>
-
+<div id="info" class="page" style="display:none;">
+<p>Criado por: Erick</p>
+<p>Versão: Premium</p>
+<p>Dica: Use no treino 😉</p>
 </div>
 
 </div>
 </div>
+
+<p id="status"></p>
 
 </div>
 
 <script>
 
-// troca páginas
-function show(id){
-document.querySelectorAll(".page").forEach(p=>p.classList.remove("activePage"));
-document.getElementById(id).classList.add("activePage");
+/* 🔑 KEY FIXA */
+const KEY = "Rkz-key-2026-aimbot";
 
-document.querySelectorAll(".icon").forEach(i=>i.classList.remove("active"));
+function login(){
+if(key.value !== KEY){
+alert("Key inválida");
+return;
+}
+loginBox.style.display="none";
+painel.style.display="block";
+}
+
+/* MENU */
+function show(id){
+document.querySelectorAll(".page").forEach(p=>p.style.display="none");
+document.getElementById(id).style.display="block";
+
+document.querySelectorAll(".sidebar button").forEach(b=>b.classList.remove("active"));
 event.target.classList.add("active");
 }
 
-// FOV
-fov.oninput=()=>fovv.innerText=fov.value;
-
-// botão
-function injetar(){
-alert("Sistema visual iniciado");
+/* TOGGLE */
+function toggle(el){
+el.classList.toggle("active");
 }
 
-/* PARTICULAS */
+/* FOV */
+fov.oninput=()=>fovv.innerText=fov.value;
+
+/* 🚀 ANIMAÇÃO INJETAR */
+function inje(){
+let s=document.getElementById("status");
+
+s.innerHTML="🟣 Iniciando...";
+
+setTimeout(()=>{
+s.innerHTML+="<br>Carregando módulos...";
+},1000);
+
+setTimeout(()=>{
+s.innerHTML+="<br>Otimizando sistema...";
+},2000);
+
+setTimeout(()=>{
+s.innerHTML+="<br>Finalizado com sucesso ✅";
+},3000);
+}
+
+/* 🌧️ CHUVA */
 const c=document.getElementById("bg");
 const ctx=c.getContext("2d");
 
 c.width=innerWidth;
 c.height=innerHeight;
 
-let p=[];
-for(let i=0;i<80;i++){
-p.push({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*2,d:Math.random()});
+let rain=[];
+
+for(let i=0;i<150;i++){
+rain.push({
+x:Math.random()*c.width,
+y:Math.random()*c.height,
+l:Math.random()*20,
+d:Math.random()*5
+});
 }
 
 function draw(){
 ctx.clearRect(0,0,c.width,c.height);
-ctx.fillStyle="rgba(140,0,255,0.4)";
-p.forEach(e=>{
+ctx.strokeStyle="rgba(168,85,247,0.5)";
+ctx.lineWidth=1;
+
+rain.forEach(r=>{
 ctx.beginPath();
-ctx.arc(e.x,e.y,e.r,0,Math.PI*2);
-ctx.fill();
-e.y+=e.d;
-if(e.y>c.height){e.y=0;e.x=Math.random()*c.width;}
+ctx.moveTo(r.x,r.y);
+ctx.lineTo(r.x,r.y+r.l);
+ctx.stroke();
+
+r.y+=r.d;
+
+if(r.y>c.height){
+r.y=0;
+r.x=Math.random()*c.width;
+}
 });
 }
+
 setInterval(draw,30);
 
 </script>
